@@ -1,4 +1,4 @@
-This Python Script is used to generate a verilog template for a module and its testbench depends on the inputs that the user enters them.
+This Python Script is used to generate template designs and testbench Verilog modules depends on the inputs that the user enters them.
 
 The generated templates follow the best clean code rules.
 
