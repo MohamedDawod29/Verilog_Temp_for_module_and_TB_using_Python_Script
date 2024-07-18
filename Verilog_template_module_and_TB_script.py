@@ -1,3 +1,5 @@
+#© 2024 Mohamed Dawod
+
 # Initialize lists
 parameter_names = []
 parameter_values = []
@@ -240,6 +242,7 @@ if circuit_type == "seq":
             with open(f"{module_name}.v", "w") as file:
                 
                 # Module declaration
+                file.write(f"//© 2024 Mohamed Dawod \n")
                 file.write(f"module {module_name} (\n")
                 
                 # Ports declaration
@@ -458,6 +461,7 @@ if circuit_type == "seq":
                 with open(f"{module_name}_TB.v", "w") as file:
                     
                     # TB Module declaration
+                    file.write(f"//© 2024 Mohamed Dawod \n")
                     file.write(f"module {module_name}_TB(); \n")
                     
                     # TB signals decleration
@@ -547,6 +551,7 @@ if circuit_type == "seq":
             with open(f"{module_name}.v", "w") as file:
                 
                 # Module declaration
+                file.write(f"//© 2024 Mohamed Dawod \n")
                 file.write(f"module {module_name} (\n")
                 
                 # Ports declaration
@@ -636,6 +641,7 @@ if circuit_type == "seq":
                 with open(f"{module_name}_TB.v", "w") as file:
                     
                     # TB Module declaration
+                    file.write(f"//© 2024 Mohamed Dawod \n")
                     file.write(f"module {module_name}_TB(); \n")
                     
                     # TB signals decleration
@@ -720,6 +726,7 @@ else: #############################################Code for comb circuit########
         with open(f"{module_name}.v", "w") as file:
             
             # Module declaration
+            file.write(f"//© 2024 Mohamed Dawod \n")
             file.write(f"module {module_name} (\n")
             
             # Ports declaration
@@ -797,6 +804,7 @@ else: #############################################Code for comb circuit########
             with open(f"{module_name}_TB.v", "w") as file:
                     
                 # TB Module declaration
+                file.write(f"//© 2024 Mohamed Dawod \n")
                 file.write(f"module {module_name}_TB(); \n")
                     
                 # TB signals decleration
