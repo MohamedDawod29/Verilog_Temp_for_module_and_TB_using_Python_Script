@@ -242,38 +242,20 @@ if circuit_type == "seq":
             with open(f"{module_name}.v", "w") as file:
                 
                 # Module declaration
-                file.write(f"//© 2024 Mohamed Dawod \n")
                 file.write(f"module {module_name} (\n")
                 
                 # Ports declaration
                 file.write(f"     {clk_name},\n")
                 file.write(f"     {reset_name},\n")
-                for inputs in input_names:
-                    width = input_widths[input_names.index(inputs)]
-                    if isinstance(width, str):
-                        file.write(f"     {inputs},\n")
+
+                for i in range(len(input_names)):
+                        file.write(f"    {input_names[i]},\n")
+
+                for i in range(len(output_names)):
+                    if i == len(output_names) - 1:
+                        file.write(f"    {output_names[i]}\n")
                     else:
-                        file.write(f"     {inputs},\n")
-                        
-                for outputs in output_names:
-                    width = output_widths[output_names.index(outputs)]
-                    if isinstance(width, str):
-                        for outputs in output_names:
-                            if (len (outputs) == 1):
-                                file.write(f"     {outputs}\n")
-                            else: 
-                                if (outputs.index(outputs) == len (outputs) - 1):
-                                    file.write(f"     {outputs}\n")
-                                else:
-                                    file.write(f"     {outputs},\n")
-                    else:
-                        if (len (outputs) == 1):
-                            file.write(f"     {outputs}\n")
-                        else: 
-                            if (outputs.index(outputs) == len (outputs) - 1):
-                                file.write(f"     {outputs}\n")
-                            else:
-                                file.write(f"     {outputs},\n")
+                        file.write(f"    {output_names[i]},\n")
 
 
                 file.write(");\n\n")
@@ -290,19 +272,31 @@ if circuit_type == "seq":
                 file.write(f"input wire {clk_name};\n")
                 file.write(f"input wire {reset_name};\n")
                            
-                # Inputs definition
+                # Inputs definition       
                 for name, width in zip(input_names, input_widths):
                     if isinstance(width, str):
-                        file.write(f"input wire [{width}-1:0] {name};\n")
+                        if  parameter_values[parameter_names.index(width)] == 1:
+                            file.write(f"input wire {name};\n")
+                        else:
+                            file.write(f"input wire [{width}-1:0] {name};\n")
                     else:
-                        file.write(f"input wire [{width-1}:0] {name};\n")
-                
+                        if width == 1:
+                            file.write(f"input wire {name};\n")
+                        else:
+                            file.write(f"input wire [{width-1}:0] {name};\n")
+
                 # Outputs definition
                 for name, width, ttype in zip(output_names, output_widths, output_types):
                     if isinstance(width, str):
-                        file.write(f"output {ttype} [{width}-1:0] {name};\n")
+                        if  parameter_values[parameter_names.index(width)] == 1:
+                            file.write(f"output {ttype} {name};\n")
+                        else:
+                            file.write(f"output {ttype} [{width}-1:0] {name};\n")
                     else:
-                        file.write(f"output {ttype} [{width-1}:0] {name};\n")
+                        if width == 1:
+                            file.write(f"output {ttype} {name};\n")
+                        else:
+                            file.write(f"output {ttype} [{width-1}:0] {name};\n")
                         
                 file.write(f"         \n")
                 file.write(f"         \n")
@@ -461,7 +455,6 @@ if circuit_type == "seq":
                 with open(f"{module_name}_TB.v", "w") as file:
                     
                     # TB Module declaration
-                    file.write(f"//© 2024 Mohamed Dawod \n")
                     file.write(f"module {module_name}_TB(); \n")
                     
                     # TB signals decleration
@@ -480,16 +473,28 @@ if circuit_type == "seq":
                     
                     for name, width in zip(input_names, input_widths):
                         if isinstance(width, str):
-                            file.write(f"reg [{width}-1:0] {name}_TB;\n")
+                            if  parameter_values[parameter_names.index(width)] == 1:
+                                file.write(f"reg {name}_TB;\n")
+                            else:
+                                file.write(f"reg [[{width}-1:0] {name}_TB;\n")
                         else:
-                            file.write(f"reg [{width-1}:0] {name}_TB;\n")
+                            if width == 1:
+                                file.write(f"reg {name}_TB;\n")
+                            else:
+                                file.write(f"reg [{width-1}:0] {name}_TB;\n")
                     
                     # Outputs definition
                     for name, width in zip(output_names, output_widths):
                         if isinstance(width, str):
-                            file.write(f"wire [{width}-1:0] {name}_TB;\n")
+                            if  parameter_values[parameter_names.index(width)] == 1:
+                                file.write(f"wire {name}_TB;\n")
+                            else:
+                                file.write(f"wire [[{width}-1:0] {name}_TB;\n")
                         else:
-                            file.write(f"wire [{width-1}:0] {name}_TB;\n")
+                            if width == 1:
+                                file.write(f"wire {name}_TB;\n")
+                            else:
+                                file.write(f"wire [{width-1}:0] {name}_TB;\n")
                             
                     file.write(f"         \n")
                     file.write(f"         \n")
@@ -505,14 +510,11 @@ if circuit_type == "seq":
                     for inputs in input_names:
                             file.write(f"     .{inputs} ({inputs}_TB),\n")
                             
-                    for outputs in output_names:
-                        if (len (outputs) == 1):
-                            file.write(f"     .{outputs} ({outputs}_TB)\n")
-                        else: 
-                            if (outputs.index(outputs) == len (outputs) - 1):
-                                file.write(f"     .{outputs} ({outputs}_TB)\n")
-                            else:
-                                file.write(f"     .{outputs} ({outputs}_TB),\n")
+                    for i in range(len(output_names)):
+                        if i == len(output_names) - 1:
+                            file.write(f"     .{output_names[i]} ({output_names[i]}_TB)\n")
+                        else:
+                            file.write(f"     .{output_names[i]} ({output_names[i]}_TB),\n")
                             
                     file.write(");\n\n")
                         
@@ -551,37 +553,19 @@ if circuit_type == "seq":
             with open(f"{module_name}.v", "w") as file:
                 
                 # Module declaration
-                file.write(f"//© 2024 Mohamed Dawod \n")
                 file.write(f"module {module_name} (\n")
                 
                 # Ports declaration
                 file.write(f"     {clk_name},\n")
-                for inputs in input_names:
-                    width = input_widths[input_names.index(inputs)]
-                    if isinstance(width, str):
-                        file.write(f"     {inputs},\n")
+
+                for i in range(len(input_names)):
+                        file.write(f"    {input_names[i]},\n")
+
+                for i in range(len(output_names)):
+                    if i == len(output_names) - 1:
+                        file.write(f"    {output_names[i]}\n")
                     else:
-                        file.write(f"     {inputs},\n")
-                        
-                for outputs in output_names:
-                    width = output_widths[output_names.index(outputs)]
-                    if isinstance(width, str):
-                        for outputs in output_names:
-                            if (len (outputs) == 1):
-                                file.write(f"     {outputs}\n")
-                            else: 
-                                if (outputs.index(outputs) == len (outputs) - 1):
-                                    file.write(f"     {outputs}\n")
-                                else:
-                                    file.write(f"     {outputs},\n")
-                    else:
-                        if (len (outputs) == 1):
-                            file.write(f"     {outputs}\n")
-                        else: 
-                            if (outputs.index(outputs) == len (outputs) - 1):
-                                file.write(f"     {outputs}\n")
-                            else:
-                                file.write(f"     {outputs},\n")
+                        file.write(f"    {output_names[i]},\n")
                             
                 file.write(");\n\n")
                 
@@ -597,19 +581,31 @@ if circuit_type == "seq":
                 file.write(f"input wire {clk_name};\n")
                 file.write(f"input wire {reset_name};\n")
                 
-                # Inputs definition
+                # Inputs definition       
                 for name, width in zip(input_names, input_widths):
                     if isinstance(width, str):
-                        file.write(f"input wire [{width}-1:0] {name};\n")
+                        if  parameter_values[parameter_names.index(width)] == 1:
+                            file.write(f"input wire {name};\n")
+                        else:
+                            file.write(f"input wire [{width}-1:0] {name};\n")
                     else:
-                        file.write(f"input wire [{width-1}:0] {name};\n")
-                
+                        if width == 1:
+                            file.write(f"input wire {name};\n")
+                        else:
+                            file.write(f"input wire [{width-1}:0] {name};\n")
+
                 # Outputs definition
                 for name, width, ttype in zip(output_names, output_widths, output_types):
                     if isinstance(width, str):
-                        file.write(f"output {ttype} [{width}-1:0] {name};\n")
+                        if  parameter_values[parameter_names.index(width)] == 1:
+                            file.write(f"output {ttype} {name};\n")
+                        else:
+                            file.write(f"output {ttype} [{width}-1:0] {name};\n")
                     else:
-                        file.write(f"output {ttype} [{width-1}:0] {name};\n")
+                        if width == 1:
+                            file.write(f"output {ttype} {name};\n")
+                        else:
+                            file.write(f"output {ttype} [{width-1}:0] {name};\n")
                         
                 file.write(f"         \n")
                 file.write(f"         \n")
@@ -641,7 +637,6 @@ if circuit_type == "seq":
                 with open(f"{module_name}_TB.v", "w") as file:
                     
                     # TB Module declaration
-                    file.write(f"//© 2024 Mohamed Dawod \n")
                     file.write(f"module {module_name}_TB(); \n")
                     
                     # TB signals decleration
@@ -659,16 +654,28 @@ if circuit_type == "seq":
                     
                     for name, width in zip(input_names, input_widths):
                         if isinstance(width, str):
-                            file.write(f"reg [{width}-1:0] {name}_TB;\n")
+                            if  parameter_values[parameter_names.index(width)] == 1:
+                                file.write(f"reg {name}_TB;\n")
+                            else:
+                                file.write(f"reg [[{width}-1:0] {name}_TB;\n")
                         else:
-                            file.write(f"reg [{width-1}:0] {name}_TB;\n")
+                            if width == 1:
+                                file.write(f"reg {name}_TB;\n")
+                            else:
+                                file.write(f"reg [{width-1}:0] {name}_TB;\n")
                     
                     # Outputs definition
                     for name, width in zip(output_names, output_widths):
                         if isinstance(width, str):
-                            file.write(f"wire [{width}-1:0] {name}_TB;\n")
+                            if  parameter_values[parameter_names.index(width)] == 1:
+                                file.write(f"wire {name}_TB;\n")
+                            else:
+                                file.write(f"wire [{width}-1:0] {name}_TB;\n")
                         else:
-                            file.write(f"wire [{width-1}:0] {name}_TB;\n")
+                            if width == 1:
+                                file.write(f"wire {name}_TB;\n")
+                            else:
+                                file.write(f"wire [{width-1}:0] {name}_TB;\n")
                             
                     file.write(f"         \n")
                     file.write(f"         \n")
@@ -683,14 +690,11 @@ if circuit_type == "seq":
                     for inputs in input_names:
                             file.write(f"     .{inputs} ({inputs}_TB),\n")
                             
-                    for outputs in output_names:
-                        if (len (outputs) == 1):
-                            file.write(f"     .{outputs} ({outputs}_TB)\n")
-                        else: 
-                            if (outputs.index(outputs) == len (outputs) - 1):
-                                file.write(f"     .{outputs} ({outputs}_TB)\n")
-                            else:
-                                file.write(f"     .{outputs} ({outputs}_TB),\n")
+                    for i in range(len(output_names)):
+                        if i == len(output_names) - 1:
+                            file.write(f"     .{output_names[i]} ({output_names[i]}_TB)\n")
+                        else:
+                            file.write(f"     .{output_names[i]} ({output_names[i]}_TB),\n")
                             
                     file.write(");\n\n")
                     
@@ -719,153 +723,129 @@ if circuit_type == "seq":
  
 else: #############################################Code for comb circuit#########################################
     
-    def write_verilog_comb(module_name,parameter_names,parameter_values,input_names,input_widths,output_names,
-                          output_widths,output_types
-                          ):
-        
+    def write_verilog_comb(module_name, parameter_names, parameter_values, input_names, input_widths, output_names, output_widths, output_types):
         with open(f"{module_name}.v", "w") as file:
-            
             # Module declaration
-            file.write(f"//© 2024 Mohamed Dawod \n")
             file.write(f"module {module_name} (\n")
-            
+
             # Ports declaration
-            for inputs in input_names:
-                width = input_widths[input_names.index(inputs)]
-                if isinstance(width, str):
-                    file.write(f"    {inputs},\n")
+            for i in range(len(input_names)):
+                    file.write(f"    {input_names[i]},\n")
+
+            for i in range(len(output_names)):
+                if i == len(output_names) - 1:
+                    file.write(f"    {output_names[i]}\n")
                 else:
-                    file.write(f"    {inputs},\n")
-                    
-            for outputs in output_names:
-                width = output_widths[output_names.index(outputs)]
-                if isinstance(width, str):
-                    for outputs in output_names:
-                        if (len (outputs) == 1):
-                            file.write(f"     {outputs}\n")
-                        else: 
-                            if (outputs.index(outputs) == len (outputs) - 1):
-                                file.write(f"     {outputs}\n")
-                            else:
-                                file.write(f"     {outputs},\n")
-                else:
-                    if (len (outputs) == 1):
-                        file.write(f"     {outputs}\n")
-                    else: 
-                        if (outputs.index(outputs) == len (outputs) - 1):
-                            file.write(f"     {outputs}\n")
-                        else:
-                            file.write(f"     {outputs},\n")
-                        
+                    file.write(f"    {output_names[i]},\n")
+                
             file.write(");\n\n")
-            
+
             # Parameters declaration
             for param, value in zip(parameter_names, parameter_values):
                 file.write(f"parameter {param} = {value};\n")
+
+            file.write("\n")
+                    
             
-            file.write(f"         \n")
-            file.write(f"         \n")
-            file.write(f"         \n")
-            
-            # Inputs definition
+            # Inputs definition       
             for name, width in zip(input_names, input_widths):
                 if isinstance(width, str):
-                    file.write(f"input wire [{width}-1:0] {name};\n")
+                    if  parameter_values[parameter_names.index(width)] == 1:
+                        file.write(f"input wire {name};\n")
+                    else:
+                        file.write(f"input wire [{width}-1:0] {name};\n")
                 else:
-                    file.write(f"input wire [{width-1}:0] {name};\n")
-            
+                    if width == 1:
+                        file.write(f"input wire {name};\n")
+                    else:
+                        file.write(f"input wire [{width-1}:0] {name};\n")
+
             # Outputs definition
             for name, width, ttype in zip(output_names, output_widths, output_types):
                 if isinstance(width, str):
-                    file.write(f"output {ttype} [{width}-1:0] {name};\n")
+                    if  parameter_values[parameter_names.index(width)] == 1:
+                        file.write(f"output {ttype} {name};\n")
+                    else:
+                        file.write(f"output {ttype} [{width}-1:0] {name};\n")
                 else:
-                    file.write(f"output {ttype} [{width-1}:0] {name};\n")
-                    
-            file.write(f"         \n")
-            file.write(f"         \n")
-            file.write(f"         \n")
-            
+                    if width == 1:
+                        file.write(f"output {ttype} {name};\n")
+                    else:
+                        file.write(f"output {ttype} [{width-1}:0] {name};\n")
+
+            file.write("\n")
+
             # Module Body
             file.write(f"always @ (*)\n")
-            file.write(f"begin \n")
-            file.write(f"         \n")
-            file.write(f"         \n")
-            file.write(f"         \n")
-            file.write(f"         \n")
-            file.write(f"         \n")
-            file.write(f"         \n")
-            file.write(f"end  \n")
+            file.write(f"begin\n")
+            file.write("\n")
+            file.write(f"end\n")
                 
-            file.write("\nendmodule")
-            
+            file.write("endmodule\n")
             
 ######################################TB Generating for a comb circuit###############################################
                 
-            with open(f"{module_name}_TB.v", "w") as file:
+        with open(f"{module_name}_TB.v", "w") as file:
+            # TB Module declaration
+            file.write(f"module {module_name}_TB();\n")
                     
-                # TB Module declaration
-                file.write(f"//© 2024 Mohamed Dawod \n")
-                file.write(f"module {module_name}_TB(); \n")
-                    
-                # TB signals decleration
-                    
-                for param, value in zip(parameter_names, parameter_values):
-                    file.write(f"  parameter {param} = {value};\n")
-                    
-                    
-                file.write(f"         \n")
-                file.write(f"         \n")
-                file.write(f"         \n")
-                    
-                for name, width in zip(input_names, input_widths):
-                    if isinstance(width, str):
-                        file.write(f"reg [{width}-1:0] {name}_TB;\n")
+            # TB signals declaration
+            for param, value in zip(parameter_names, parameter_values):
+                file.write(f"parameter {param} = {value};\n")
+
+            file.write("\n")
+
+            for name, width in zip(input_names, input_widths):
+                if isinstance(width, str):
+                    if  parameter_values[parameter_names.index(width)] == 1:
+                        file.write(f"reg {name}_TB;\n")
+                    else:
+                        file.write(f"reg [[{width}-1:0] {name}_TB;\n")
+                else:
+                    if width == 1:
+                        file.write(f"reg {name}_TB;\n")
                     else:
                         file.write(f"reg [{width-1}:0] {name}_TB;\n")
-                    
-                # Outputs definition
-                for name, width in zip(output_names, output_widths):
-                    if isinstance(width, str):
+
+            # Outputs definition
+            for name, width in zip(output_names, output_widths):
+                if isinstance(width, str):
+                    if  parameter_values[parameter_names.index(width)] == 1:
+                        file.write(f"wire {name}_TB;\n")
+                    else:
                         file.write(f"wire [{width}-1:0] {name}_TB;\n")
+                else:
+                    if width == 1:
+                        file.write(f"wire {name}_TB;\n")
                     else:
                         file.write(f"wire [{width-1}:0] {name}_TB;\n")
-                            
-                file.write(f"         \n")
-                file.write(f"         \n")
-                file.write(f"         \n")
 
-                # instantiation
-                     
-                file.write(f"{module_name}  DUT\n")
-                file.write(f"( \n")
-                    
-                for inputs in input_names:
-                    file.write(f"     .{inputs} ({inputs}_TB),\n")
-                            
-                for outputs in output_names:
-                    if (len (outputs) == 1):
-                        file.write(f"     .{outputs} ({outputs}_TB)\n")
-                    else: 
-                        if (outputs.index(outputs) == len (outputs) - 1):
-                            file.write(f"     .{outputs} ({outputs}_TB)\n")
-                        else:
-                            file.write(f"     .{outputs} ({outputs}_TB),\n")
-                            
-                file.write(");\n\n")
-                        
-                file.write(f"initial \n")
-                file.write(f"begin \n")
-                file.write(f"         \n")
-                file.write(f"         \n")
-                file.write(f"    //write your 1st test case here        \n")
-                file.write(f"         \n")
-                file.write(f"         \n")
-                file.write(f"    //write your 2nd test case here        \n")
-                file.write(f"         \n")
-                file.write(f"         \n")
-                file.write(f"end  \n")
+            file.write("\n")
+
+            # Instantiation
+            file.write(f"{module_name} DUT (\n")
+
+            for inputs in input_names:
+                file.write(f"    .{inputs} ({inputs}_TB),\n")
+
+            for i in range(len(output_names)):
+                if i == len(output_names) - 1:
+                    file.write(f"    .{output_names[i]} ({output_names[i]}_TB)\n")
+                else:
+                    file.write(f"    .{output_names[i]} ({output_names[i]}_TB),\n")
+
+            file.write(");\n\n")
+
+            file.write("initial\n")
+            file.write("begin\n")
+            file.write("\n")
+            file.write("    // Write your 1st test case here\n")
+            file.write("\n")
+            file.write("    // Write your 2nd test case here\n")
+            file.write("\n")
+            file.write("end\n")
                 
-                file.write("\nendmodule")
+            file.write("endmodule\n")
 
     write_verilog_comb(module_name, parameter_names, parameter_values, input_names, input_widths, output_names,
                        output_widths,output_types)
